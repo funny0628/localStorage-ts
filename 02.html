@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1#0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>评论</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    #container {
+        width: 800px;
+        height: 800px;
+        margin: 10px auto;
+        border: 1px solid red;
+        padding: 5px;
+        box-sizing: border-box;
+
+    }
+    #text {
+        width: 100%;
+        height: 200px;
+        border: 1px solid green;
+    }
+    #comment {
+        width: 100%;
+        height: 280px;
+        margin-top: 10px;
+        border: 1px solid blue;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    #comment div {
+        height: 20px;
+        line-height: 20px;
+        border-bottom: 1px dashed #ccc;
+        position: relative;
+        padding-right: 20px;
+    }
+ 
+    #comment div i {
+        position: absolute;
+        right: 20px;
+        top: 2px;
+        cursor: pointer;
+    }
+    #addcomment {
+        width: 100%;
+        height: 280px;
+        margin-top: 10px;
+        border: 1px solid purple;
+        padding: 10px;
+        box-sizing: border-box;
+        position: relative;
+    }
+    #addcomment textarea {
+      width: 100%;
+      height: 200px;
+      border: 1px solid orange;
+
+    }
+    #addcomment button {
+        font-size: 20px;
+        padding: 5px;
+        margin-top: 5px;
+        position: absolute;
+        right: 10px;
+
+    }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="text">这里就是一段文字没有什么可以研究的,随便替代一下吧</div>
+        <div id="comment">
+            <div >评论:</div>
+        </div>
+        <div id="addcomment">
+            <textarea id="comtext"></textarea>
+            <button id="btn">新增</button>
+        </div>
+    </div>
+</body>
+</html>
+<script src="./02.js"></script>
+<script>
+    let db = new DataHelper('pldata','id')
+//获取元素
+let comtext= document.getElementById('comtext')
+let addbtn= document.getElementById('btn');
+var fatherCom = document.getElementById('comment')
+window.onload = function(){
+    //页面刷新,获取本地的数据显示到页面上
+    let arrdata = db.readdata() || [];
+    for(let ele of arrdata){
+        makediv(ele.comment,ele.id)
+    }
+}
+addbtn.onclick = function(){
+    let comvalue = comtext.value;
+    if(comvalue === "") return;
+    let  id = db.adddata(comvalue)
+    makediv(comvalue,id)
+}
+//创建dom元素
+function makediv(com,id){
+    let Div = document.createElement('div')
+    Div.innerText = com;
+    fatherCom.appendChild(Div);
+    let I = document.createElement('i')
+    I.innerText = "X";
+    I.onclick = removeCom
+    I.setAttribute("plid",id)
+    Div.appendChild(I);
+    comtext.value = ''
+
+}
+function removeCom(e){
+    let currentElement = e.target
+    //获取当前I 的自定义属性,在本地数据中找到这个数据再数组中删除掉
+    let id = currentElement.getAttribute("plid");
+    //删除dom
+    let parent = currentElement.parentNode;
+    parent.parentNode.removeChild(parent)
+    //在本地删除
+    db.deletedata(id)
+}
+
+</script>
